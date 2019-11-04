@@ -1,4 +1,26 @@
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.decomposition import PCA
+from sklearn.svm import SVC
+import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
+import numpy as np
+from planar_utils import plot_decision_boundary, sigmoid, load_planar_dataset, load_extra_datasets
+from sklearn.feature_selection import f_classif, chi2, mutual_info_classif
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
+from sklearn import tree
+from sklearn.model_selection import StratifiedKFold, cross_val_score
+from scipy.stats import randint as sp_randint
+from sklearn.ensemble import BaggingClassifier
+from importlib import reload
+from pprint import pprint
+from patsy import dmatrices
+from sklearn.model_selection import train_test_split
+
+X_train,X_test, Y_train, Y_test = train_test_split(X.T,Y.T,test_size=0.3)
+model = tree.DecisionTreeClassifier(criterion = 'entropy', max_depth=14)
+kfold = StratifiedKFold(n_splits= 10, shuffle = True)
+scores = cross_val_score(model, X.T, Y.T, cv = kfold)
 accuracy1 = [] 
 hidden_layer_sizes = [1, 2, 3, 4, 5]
 for i, n_h in enumerate(hidden_layer_sizes):
