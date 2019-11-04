@@ -21,6 +21,18 @@ model = tree.DecisionTreeClassifier(criterion = 'entropy', max_depth=14)
 kfold = StratifiedKFold(n_splits= 10, shuffle = True)
 scores = cross_val_score(model, X.T, Y.T, cv = kfold)
 
+def predict(node, row):
+	if row[node['index']] < node['value']:
+		if isinstance(node['left'], dict):
+			return predict(node['left'], row)
+		else:
+			return node['left']
+	else:
+		if isinstance(node['right'], dict):
+			return predict(node['right'], row)
+		else:
+			return node['right']
+
 accuracy1 = [] 
 hidden_layer_sizes = [1, 2, 3, 4, 5]
 for i, n_h in enumerate(hidden_layer_sizes):
@@ -29,6 +41,8 @@ for i, n_h in enumerate(hidden_layer_sizes):
     score = float((np.dot(B,predictions.T) + np.dot(1-B,1-predictions.T))/float(B.size)*100)
     accuracy1.append(score)
 print("Accuracy: ", accuracy1)
+
+
 fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize = (10,7));
 
 marker_style = dict(color='tab:blue', linestyle=':', marker='o',
