@@ -21,6 +21,18 @@ X_train,X_test, Y_train, Y_test = train_test_split(X.T,Y.T,test_size=0.3)
 model = tree.DecisionTreeClassifier(criterion = 'entropy', max_depth=14)
 kfold = StratifiedKFold(n_splits= 10, shuffle = True)
 scores = cross_val_score(model, X.T, Y.T, cv = kfold)
+def predict(node, row):
+	if row[node['index']] < node['value']:
+		if isinstance(node['left'], dict):
+			return predict(node['left'], row)
+		else:
+			return node['left']
+	else:
+		if isinstance(node['right'], dict):
+			return predict(node['right'], row)
+		else:
+			return node['right']
+            
 accuracy1 = [] 
 hidden_layer_sizes = [1, 2, 3, 4, 5]
 for i, n_h in enumerate(hidden_layer_sizes):
