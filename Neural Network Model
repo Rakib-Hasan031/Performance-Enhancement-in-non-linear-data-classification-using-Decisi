@@ -42,7 +42,7 @@ def forward_propagation(X, parameters):
     A1 = np.tanh(Z1)
     Z2 = np.dot(W2,A1)+b2
     A2 = sigmoid(Z2) 
-    assert(A2.shape == (1, X.shape[1])) 
+    assert(A2.shape == (1, A.shape[1])) 
     cache = {"Z1": Z1,
              "A1": A1,
              "Z2": Z2,
@@ -50,20 +50,20 @@ def forward_propagation(X, parameters):
     
     return A2, cache
 
-def compute_cost(A2, Y, parameters):
-    m = Y.shape[1] 
+def compute_cost(A2, B, parameters):
+    m = B.shape[1] 
     logprobs = np.multiply(np.log(A2),Y)+np.multiply((1-Y),np.log(1-A2))
     cost = - np.sum(logprobs) / m
     cost = float(np.squeeze(cost))  
     assert(isinstance(cost, float))
     return cost
-def backward_propagation(parameters, cache, X, Y):
-    m = X.shape[1]
+def backward_propagation(parameters, cache, A, B):
+    m = A.shape[1]
     W1 = parameters['W1']
     W2 = parameters['W2']
     A1 = cache['A1']
     A2 = cache['A2']
-    dZ2 = A2-Y
+    dZ2 = A2-B
     dW2 = (1 / m) * np.dot(dZ2, A1.T)
     db2 = (1/m)*np.sum(dZ2,axis=1,keepdims=True)
     dZ1 = np.multiply(np.dot(W2.T,dZ2),1-np.power(A1,2))
@@ -98,26 +98,22 @@ def update_parameters(parameters, grads, learning_rate = 1.2):
     
     return parameters
 
-def nn_model(X, Y, n_h, num_iterations = 10000, print_cost=False):    
-    np.random.seed(3)
-    n_x = layer_sizes(X, Y)[0]
-    n_y = layer_sizes(X, Y)[2] 
-    parameters = initialize_parameters(n_x, n_h, n_y)
+def nn_model(A, , n_h, num_iterations = 10000, print_cost=False):    
+    np.random.seed(1)
+    costs = []                      
+    parameters = initialize_parameters_deep(layers_dims)
     for i in range(0, num_iterations):
-        A2, cache = forward_propagation(X,parameters)
-        cost = compute_cost(A2,Y,parameters)
-        grads = backward_propagation(parameters,cache,X,Y)
-        parameters = update_parameters(parameters, grads)
+        AL, caches = L_model_forward(A, parameters)
+        cost = compute_cost(AL, B)
+        grads = L_model_backward(AL, B, caches)
+        parameters = update_parameters(parameters, grads, learning_rate)
         if print_cost and i % 1000 == 0:
-            print ("Cost after iteration %i: %f" %(i, cost))
-
+            print ("Cost after iteration %i: %f" % (i, cost))
+        if print_cost and i % 1000 == 0:
+            costs.append(cost)
     return parameters
-
-def predict(parameters, X):
-
-    X -- input data of size (n_x, m)
-    A2, cache = forward_propagation(X,parameters)
-    predictions = np.round(A2) 
+def predict(parameters, A):
+    A2, cache = forward_propagation(A,parameters)
+    predictions = np.round(AL)
     return predictions
-
 
